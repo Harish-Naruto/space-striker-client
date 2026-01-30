@@ -192,59 +192,6 @@ interface GameStateResponse {
 
 ---
 
-## 🎭 Component Overview
-
-### Core Components
-
-#### `App.tsx`
-Root component that manages routing between Lobby and GameView based on whether a room is active.
-
-#### `Lobby.tsx`
-- Room code input with validation
-- "Create New Room" button (generates random 6-character code)
-- "Join Game" button
-- Player ID display
-- Animated UI with Framer Motion
-
-#### `GameView.tsx`
-Main game container that:
-- Renders appropriate UI based on game status
-- Shows "Waiting for opponent" during lobby phase
-- Displays ship placement interface
-- Shows dual boards during active gameplay
-- Handles game over state
-
-#### `Board.tsx`
-Interactive 5x5 grid component featuring:
-- Cell click handlers for strikes
-- Visual state indicators (hit/miss/ship)
-- Animated radar scanning effect
-- Hover effects for clickable cells
-- Responsive design
-
-#### `Placement.tsx`
-Ship placement interface allowing players to:
-- Click cells to place ships
-- Visual validation of placements
-- Confirmation button to submit
-- Instructions and feedback
-
-#### `HUD.tsx`
-Heads-up display showing:
-- Current room code
-- Connection status indicator
-- Active player indicator
-- Return to lobby button
-
-#### `GameOver.tsx`
-End game overlay with:
-- Winner/loser announcement
-- "Play Again" option
-- "Return to Lobby" option
-- Animated entrance
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
