@@ -146,7 +146,7 @@ interface MessageWs {
 - **Connecting** - Establishing WebSocket connection
 - **Connected** - Active real-time connection
 
-The `useGameSocket` hook manages the entire WebSocket lifecycle, automatically reconnecting and handling all message types.
+The `useGameSocket` hook manages the entire WebSocket lifecycle and handles all message types.
 
 ---
 
