@@ -1,16 +1,28 @@
-import './App.css'
-import { Button } from '@/components/ui/button'
+import { Lobby } from './views/Lobby';
+import { GameView } from './views/GameView';
+import { useGameStore } from './store/useGameStore';
+import './App.css';
 
 function App() {
+  const { roomID, setRoomID } = useGameStore();
+
+  const handleJoinGame = (room: string) => {
+    setRoomID(room);
+  };
+
+  const handleReturnToLobby = () => {
+    setRoomID(null);
+  };
 
   return (
-    <>
-       <h1 className="text-3xl font-bold underline bg-amber-700">
-        Hello world!
-      </h1>
-      <Button>click me</Button>
-    </>
-  )
+    <div className="min-h-screen bg-slate-950">
+      {!roomID ? (
+        <Lobby onJoinGame={handleJoinGame} />
+      ) : (
+        <GameView onReturnToLobby={handleReturnToLobby} />
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
