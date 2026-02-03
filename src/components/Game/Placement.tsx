@@ -8,7 +8,7 @@ interface PlacementProps {
 
 export const Placement = ({ onConfirmPlacement }: PlacementProps) => {
     const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
-    const REQUIRED_SHIPS = 3; // Adjust based on game rules
+    const REQUIRED_SHIPS = 5; // Adjust based on game rules
 
     const toggleCell = (x: number, y: number) => {
         const key = `${x},${y}`;
@@ -58,8 +58,8 @@ export const Placement = ({ onConfirmPlacement }: PlacementProps) => {
 
             {/* 5x5 Grid for placement */}
             <div className="grid grid-cols-5 gap-2 p-4 bg-slate-900/50 rounded-lg">
-                {Array.from({ length: 5 }).map((_, y) =>
-                    Array.from({ length: 5 }).map((_, x) => (
+                {Array.from({ length: 5 }).map((_, x) =>
+                    Array.from({ length: 5 }).map((_, y) => (
                         <motion.button
                             key={`${x}-${y}`}
                             onClick={() => toggleCell(x, y)}

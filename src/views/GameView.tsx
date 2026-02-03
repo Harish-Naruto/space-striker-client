@@ -45,8 +45,8 @@ export const GameView = ({ onReturnToLobby }: GameViewProps) => {
     };
 
     const myTurn = gameState ? isMyTurn(gameState.activePlayer, playerID) : false;
-    const isGameFinished = gameState?.status === 'FINISHED';
-    const showPlacement = gameState?.status === 'WAITING_FOR_SHIPS';
+    const isGameFinished = gameState?.status === "OVER";
+    const showPlacement = gameState?.status === 'WAITING_FOR_SHIP';
     const showBoards = gameState?.status === 'ACTIVE' || isGameFinished;
 
     return (
