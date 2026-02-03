@@ -18,7 +18,7 @@ export const CellState = {
 export type CellStateValue = typeof CellState[keyof typeof CellState];
 
 // Game Status
-export type GameStatus = "WAITING_FOR_PLAYER" | "WAITING_FOR_SHIPS" | "ACTIVE" | "FINISHED";
+export type GameStatus = "WAITING_FOR_PLAYER" | "WAITING_FOR_SHIP" | "ACTIVE" | "OVER";
 
 export type ConnectionStatus = "disconnected" | "connecting" | "connected";
 
@@ -53,4 +53,12 @@ export interface GameOverPayload {
 
 export interface ErrorPayload {
     message: string;
+}
+
+export interface HitPayload {
+    x: number;
+    y: number;
+    result: string; // This should match your domain.CellState type
+    nextTurn: string;
+    by: string;
 }

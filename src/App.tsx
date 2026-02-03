@@ -1,6 +1,7 @@
 import { Lobby } from './views/Lobby';
 import { GameView } from './views/GameView';
 import { useGameStore } from './store/useGameStore';
+import { ToastContainer, toast } from "react-toastify";
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-slate-950">
       {!roomID ? (
         <Lobby onJoinGame={handleJoinGame} />
@@ -22,6 +24,9 @@ function App() {
         <GameView onReturnToLobby={handleReturnToLobby} />
       )}
     </div>
+    <ToastContainer autoClose={false} draggable={false} />
+    </>
+    
   );
 }
 

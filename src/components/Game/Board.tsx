@@ -34,8 +34,8 @@ export const Board = ({ board, isOpponentBoard = false, onCellClick, isClickable
 
             {/* 5x5 Grid */}
             <div className="grid grid-cols-5 gap-1 p-2 bg-slate-800/50 rounded-lg border border-cyan-900/50 shadow-lg">
-                {board.map((row, y) =>
-                    row.map((cell, x) => {
+                {board.map((row, x) =>
+                    row.map((cell, y) => {
                         const cellState = cell as typeof CellState[keyof typeof CellState];
                         const isHoverable = isClickable && cellState === CellState.EMPTY;
 
