@@ -1,7 +1,7 @@
 import { Lobby } from './views/Lobby';
 import { GameView } from './views/GameView';
 import { useGameStore } from './store/useGameStore';
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import './App.css';
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <GameView onReturnToLobby={handleReturnToLobby} />
       )}
     </div>
-    <ToastContainer autoClose={false} draggable={false} />
+    <ToastContainer draggable={false} />
     </>
     
   );
