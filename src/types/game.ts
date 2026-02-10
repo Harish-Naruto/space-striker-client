@@ -1,5 +1,5 @@
 // Message Types matching Go backend exactly
-export type MessageType = "MOVE" | "CHAT" | "GAME_STATE" | "GAME_OVER" | "ERROR" | "PLACE_SHIP" | "GAME_UPDATE";
+export type MessageType = "MOVE" | "CHAT" | "GAME_STATE" | "GAME_OVER" | "ERROR" | "PLACE_SHIP" | "GAME_UPDATE" | "TIME_OUT" | "SYNC_TIME";
 
 // Message Envelope
 export interface MessageWs {
@@ -30,6 +30,7 @@ export interface GameStateResponse {
     activePlayer: string;       // UserID of current turn
     winner: string;
     status: GameStatus;
+    endAt : number;
 }
 
 export interface MovePayload {
@@ -39,6 +40,10 @@ export interface MovePayload {
 
 export interface PlacePayload {
     ships: { x: number; y: number }[]; // List of all ship coordinates
+}
+
+export interface SyncTimePayload {
+    serverTime: number;
 }
 
 export interface ChatPayload {
@@ -61,4 +66,5 @@ export interface HitPayload {
     result: string; // This should match your domain.CellState type
     nextTurn: string;
     by: string;
+    endAt: number;
 }

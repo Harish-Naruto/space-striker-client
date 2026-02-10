@@ -20,6 +20,7 @@ interface GameStore {
     connectionStatus: ConnectionStatus;
     roomID: string | null;
     lastMove: HitPayload | null;
+    serverOffset: number; // Difference between server and local clock
 
     // Actions
     setGameState: (state: GameStateResponse) => void;
@@ -28,8 +29,10 @@ interface GameStore {
     setLastMove: (move: HitPayload) => void;
     applyMove: (move: HitPayload) => void;
     setGameStatus: (NewStatus: GameStatus) => void;
+    setTurn :(nextTurn: string,endAt:number) => void;
     resetGame: () => void;
     gameOver :(winnerId: string) => void;
+    setServerOffset: (serverTime: number) => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -38,6 +41,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     connectionStatus: 'disconnected',
     roomID: null,
     lastMove: null,
+    serverOffset: 0,
 
     setGameState: (gameState) => {
         console.log('[Store] Setting game state:', {
@@ -66,12 +70,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
     setGameStatus: (NewStatus) => {
         const {gameState} = get();
         if(!gameState){
-            console.warn('[Store] Cannot apply move: nno game state')
+            console.warn('[Store] Cannot apply status: no game state')
             return;
         }
         const updatedState: GameStateResponse = {
             ...gameState,
             status:NewStatus
+        }
+        set({ gameState: updatedState});
+
+    },
+
+    setTurn: (nextTurn,endAt) =>{
+        const {gameState} = get();
+        if(!gameState){
+            console.warn('[Store] Cannot apply turn: no game state')
+            return;
+        }
+        const updatedState: GameStateResponse = {
+            ...gameState,
+            activePlayer:nextTurn,
+            endAt:endAt,
         }
         set({ gameState: updatedState});
 
@@ -85,7 +104,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             return;
         }
 
-        const { x, y, result, nextTurn, by } = move;
+        const { x, y, result, nextTurn, by,endAt } = move;
         
         const cellValue = parseInt(result)
 
@@ -104,6 +123,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             yourBoard: newYourBoard,
             opponentBoard: newOpponentBoard,
             activePlayer: nextTurn,
+            endAt:endAt
         };
 
         set({ gameState: updatedState, lastMove: move });
@@ -132,6 +152,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
         }
         set({gameState:updatedState});
 
-    }
+    },
+    setServerOffset: (serverTime) => {
+        const offset = serverTime - Date.now();
+        console.log('[Store] Clock synced. Offset:', offset, 'ms');
+        set({ serverOffset: offset });
+    },
+
+
 
 }));

@@ -7,7 +7,7 @@ const WEBSOCKET_URL = 'ws://localhost:8080/ws';
 
 export const useGameSocket = (roomID: string | null) => {
     const wsRef = useRef<WebSocket | null>(null);
-    const { playerID, setGameState, updateConnectionStatus, applyMove, setGameStatus, gameOver } = useGameStore();
+    const { playerID, setGameState, updateConnectionStatus, applyMove, setGameStatus, gameOver,setTurn } = useGameStore();
 
     const sendMessage = useCallback((message: MessageWs) => {
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -46,10 +46,12 @@ export const useGameSocket = (roomID: string | null) => {
                         console.log('Updating game state:', gameState);
                         setGameState(gameState);
                         break;
+
                     case 'GAME_UPDATE':
                         const NewStatus = message.payload.status as GameStatus;
                         setGameStatus(NewStatus);
                         break;
+
                     case 'MOVE':
                         const hitPayload = message.payload as HitPayload;
                         console.log('Move received:', hitPayload);
@@ -61,6 +63,11 @@ export const useGameSocket = (roomID: string | null) => {
                         console.log('Game Over! winner :', winnerId);
                         gameOver(winnerId);
                         break;
+                    
+                    case 'TIME_OUT':
+                        const {nextTurn,endAt} = message.payload;
+                        setTurn(nextTurn,endAt)
+                        break;
 
                     case 'ERROR':
                         console.error('Server error:', message.payload.message);
@@ -69,6 +76,10 @@ export const useGameSocket = (roomID: string | null) => {
 
                     case 'CHAT':
                         console.log('Chat message:', message.payload);
+                        break;
+                    case 'SYNC_TIME':
+                        const { serverTime } = message.payload as SyncTimePayload;
+                        useGameStore.getState().setServerOffset(serverTime);
                         break;
 
                     default:
