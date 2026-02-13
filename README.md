@@ -191,7 +191,19 @@ interface GameStateResponse {
 - `3` - Miss (struck empty water)
 
 ---
+## 📸 Screenshots
 
+### Setup & Gameplay
+| Lobby | Ship Placement | Gameplay |
+|:---:|:---:|:---:|
+| <img src="./images/screenshot-2026-02-13_08-59-50.png" width="300"> | <img src="./images/screenshot-2026-02-13_08-56-48.png" width="300"> | <img src="./images/screenshot-2026-02-13_08-57-32.png" width="300"> |
+
+### Game Outcomes
+| Victory | Game Over |
+|:---:|:---:|
+| <img src="./images/screenshot-2026-02-13_08-58-30.png" width="400"> | <img src="./images/screenshot-2026-02-13_08-58-49.png" width="400"> |
+
+---
 ## 🚀 Getting Started
 
 ### Prerequisites
