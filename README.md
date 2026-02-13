@@ -11,9 +11,11 @@
 
 **Space Striker** is a real-time multiplayer tactical combat game where players compete in a 5x5 grid battlefield. This repository contains the **frontend client** - a modern, responsive web application that communicates with a Go-based WebSocket server to provide instant, synchronized gameplay between two players.
 
+The game features a **retro arcade cabinet aesthetic** with pixel art SVG sprites, the "Press Start 2P" font, scanline effects, and neon glow styling — all powered by Framer Motion animations.
+
 The game follows a Battleship-inspired mechanic where players:
-1. **Place their fleet** strategically on their own board
-2. **Take turns** striking at the opponent's board
+1. **Place their fleet** of 5 ships strategically on their own board
+2. **Take turns** striking at the opponent's board within a **30-second time limit** per turn
 3. **Win** by destroying all enemy ships first
 
 ---
@@ -33,25 +35,28 @@ The game follows a Battleship-inspired mechanic where players:
 - Real-time connection status indicators
 
 ### Ship Placement Phase
-- Players place their ships on a 5x5 grid
-- Ships are placed one cell at a time
-- Visual feedback for valid/invalid placements
+- Players place **5 ships** on a 5x5 grid
+- Ships are placed one cell at a time (click to toggle)
+- Progress bar showing ships placed vs. required
+- Reset (clear) and confirm buttons
 - Confirmation system before starting the battle
 
 ### Battle Phase
 - **Turn-based combat** with real-time updates
+- **30-second countdown timer** per turn (with server-synced clock)
 - Click on opponent's board to launch strikes
-- Visual indicators for:
-  - **Hits** (✖) - Red indicator when a ship is struck
-  - **Misses** (○) - Gray indicator when striking empty water
-  - **Ships** (▬) - Blue indicator on your own board
+- Pixel art sprite-based visual indicators for:
+  - **Hits** - Red explosion animation when a ship is struck
+  - **Misses** - Blue splash sprite when striking empty water
+  - **Ships** - Cyan ship sprite on your own board
+  - **Crosshair** - Targeting crosshair on hover over enemy cells
 - Active player indicator with turn status
 - Both boards visible simultaneously (yours and opponent's)
+- Toast notifications for connection events and errors
 
 ### Game Over
-- Victory/defeat screen with winner announcement
+- Victory/defeat screen with animated pixel art sprites (trophy or skull)
 - Options to play again or return to lobby
-- Game statistics display
 
 ---
 
@@ -68,9 +73,14 @@ The game follows a Battleship-inspired mechanic where players:
 #### Styling & UI
 - **Tailwind CSS 4** - Utility-first CSS framework
 - **Framer Motion 12** - Smooth animations and transitions
-- **Radix UI** - Accessible component primitives
+- **Radix UI** - Accessible component primitives (via shadcn/ui)
+- **shadcn/ui** - Pre-built component library (New York style)
 - **Lucide React** - Beautiful icon library
 - **CVA** (Class Variance Authority) - Component variant management
+- **clsx** + **tailwind-merge** - Conditional class name utilities
+- **tw-animate-css** - Animation utilities for Tailwind
+- **react-toastify** - Toast notifications for game events
+- **Press Start 2P** - Google Font for retro arcade aesthetic
 
 #### State Management & Data
 - **Zustand 5** - Lightweight state management
@@ -86,14 +96,18 @@ src/
 ├── components/          # Reusable UI components
 │   ├── Game/           # Game-specific components
 │   │   ├── Board.tsx        # Game board grid with cell rendering
-│   │   ├── HUD.tsx          # Heads-up display (room code, status)
+│   │   ├── CountDown.tsx    # Turn countdown timer (server-synced)
+│   │   ├── HUD.tsx          # Heads-up display (room code, status, timer)
 │   │   ├── Placement.tsx    # Ship placement interface
-│   │   └── GameOver.tsx     # End game screen
-│   └── ui/             # Generic UI components (buttons, etc.)
+│   │   ├── GameOver.tsx     # End game screen (victory/defeat)
+│   │   └── Spritesheet.tsx  # SVG pixel art sprite definitions & components
+│   └── ui/             # Generic UI components (shadcn/ui)
+│       └── button.tsx       # Button component with variants
 │
 ├── views/              # Main application views
-│   ├── Lobby.tsx           # Room creation/joining interface
-│   └── GameView.tsx        # Main game container
+│   ├── Lobby.tsx                # Room creation/joining interface
+│   ├── GameView.tsx             # Main game container
+│   └── SpaceBattkeBackground.tsx # Animated space background with ships
 │
 ├── store/              # State management
 │   └── useGameStore.ts     # Zustand store for game state
@@ -105,13 +119,22 @@ src/
 │   └── game.ts            # Game state, messages, and types
 │
 ├── utils/              # Utility functions
-│   └── utils.ts           # Helper functions (room ID generation, etc.)
+│   └── utils.ts           # Helper functions (room ID generation, cell styles)
 │
 ├── lib/                # Library configurations
+│   └── utils.ts           # Tailwind class merge utility (cn)
+│
+├── styles/             # CSS animations and effects
+│   ├── galaxy-animations.css  # Scrollbar, reduced-motion, GPU helpers
+│   └── game-animations.css    # Game-specific keyframe animations
+│
 ├── assets/             # Static assets
+│   └── react.svg          # React logo SVG
+│
 ├── App.tsx             # Root application component
+├── App.css             # App-level styles
 ├── main.tsx            # Application entry point
-└── index.css           # Global styles
+└── index.css           # Global Tailwind + shadcn/ui theme styles
 ```
 
 ---
@@ -131,12 +154,15 @@ ws://localhost:8080/ws?roomID={ROOM_CODE}&playerID={PLAYER_ID}
 **Client → Server:**
 - `MOVE` - Strike a cell on opponent's board
 - `PLACE_SHIP` - Submit ship placement coordinates
-- `CHAT` - (Future feature) Send chat messages
 
 **Server → Client:**
-- `GAME_STATE` - Initial game state on connection
-- `GAME_UPDATE` - Real-time updates after each move
-- `GAME_OVER` - Final game state with winner
+- `GAME_STATE` - Full game state on connection/reconnection
+- `GAME_UPDATE` - Game status change (e.g., phase transitions)
+- `MOVE` - Result of a strike (hit/miss, next turn, timer)
+- `GAME_OVER` - Winner announcement
+- `TIME_OUT` - Turn timeout (auto-switches the active player)
+- `SYNC_TIME` - Server clock synchronization for countdown timer
+- `CHAT` - Chat messages (future feature)
 - `ERROR` - Error messages from server
 
 ### Message Format
@@ -168,12 +194,20 @@ interface GameStore {
   playerID: string;                     // Persistent unique player ID
   connectionStatus: ConnectionStatus;   // WebSocket connection status
   roomID: string | null;                // Current room code
+  lastMove: HitPayload | null;          // Last move result
+  serverOffset: number;                 // Clock offset for timer sync
   
   // Actions
   setGameState(state): void;
   updateConnectionStatus(status): void;
   setRoomID(roomID): void;
+  setLastMove(move): void;
+  applyMove(move): void;           // Apply a move to boards locally
+  setGameStatus(status): void;     // Update game phase
+  setTurn(nextTurn, endAt): void;  // Switch active player & reset timer
   resetGame(): void;
+  gameOver(winnerId): void;        // Set winner and OVER status
+  setServerOffset(serverTime): void; // Sync local clock with server
 }
 ```
 
@@ -187,6 +221,7 @@ interface GameStateResponse {
   activePlayer: string;          // Player ID whose turn it is
   winner: string;                // Player ID of winner (if game finished)
   status: GameStatus;            // Current game phase
+  endAt: number;                 // Turn deadline timestamp (unix ms)
 }
 ```
 
@@ -226,6 +261,20 @@ cd space-striker-client
 bun install
 ```
 
+### Environment Setup
+
+Copy the example environment file and adjust values as needed:
+
+```bash
+cp .env.example .env
+```
+
+The `.env.example` file contains:
+```
+WEBSOCKET_URL='ws://localhost:8080/ws'
+HTTP_URL='http://localhost:8080'
+```
+
 ### Development
 
 ```bash
@@ -236,10 +285,22 @@ The application will start at `http://localhost:5173` (default Vite port).
 
 **Note:** Ensure the backend WebSocket server is running at `ws://localhost:8080/ws` before starting the frontend.
 
+### Linting
+
+```bash
+bun run lint
+```
+
 ### Build for Production
 
 ```bash
 bun run build
+```
+
+### Preview Production Build
+
+```bash
+bun run preview
 ```
 
 ---
@@ -247,16 +308,19 @@ bun run build
 ## 🔧 Configuration
 
 ### WebSocket URL
-The WebSocket connection URL is configured in `src/hooks/useGameSocket.ts`:
+The WebSocket connection URL is currently hardcoded in `src/hooks/useGameSocket.ts`:
 
 ```typescript
 const WEBSOCKET_URL = 'ws://localhost:8080/ws';
 ```
 
-Update this to point to your backend server in production.
+Update this to point to your backend server in production. A `.env.example` file is provided for reference, but the environment variables are not yet wired into the application code.
+
+### Path Aliases
+The project uses `@/` as a path alias for the `src/` directory, configured in both `vite.config.ts` and `tsconfig.app.json`.
 
 ### Tailwind CSS
-Tailwind configuration is managed through `@tailwindcss/vite` plugin v4, with styles in `src/index.css`.
+Tailwind v4 configuration is managed through `@tailwindcss/vite` plugin, with theme styles in `src/index.css`. The project uses shadcn/ui (New York style) for component primitives.
 
 ### TypeScript
 - `tsconfig.json` - Base TypeScript configuration
@@ -268,13 +332,16 @@ Tailwind configuration is managed through `@tailwindcss/vite` plugin v4, with st
 ## 🎯 Key Features
 
 ✅ **Real-time multiplayer** - Instant updates via WebSocket  
-✅ **Responsive design** - Works on desktop and mobile  
-✅ **Smooth animations** - Framer Motion powered transitions  
+✅ **Turn timer** - 30-second countdown with server-synced clock  
+✅ **Retro arcade aesthetic** - Pixel art sprites, scanlines, neon glow, "Press Start 2P" font  
+✅ **Smooth animations** - Framer Motion powered transitions and sprite animations  
 ✅ **Type-safe** - Full TypeScript coverage  
 ✅ **Modern UI** - Tailwind CSS with custom animations  
 ✅ **Persistent player ID** - No signup required  
-✅ **Room-based matchmaking** - Easy join with room codes  
-✅ **Visual feedback** - Clear indicators for all game states  
+✅ **Room-based matchmaking** - Easy join with 6-character room codes  
+✅ **Visual feedback** - Sprite-based indicators for hits, misses, and ships  
+✅ **Toast notifications** - Real-time connection and error feedback  
+✅ **Accessible motion** - Respects `prefers-reduced-motion` user preference  
 
 ---
 
