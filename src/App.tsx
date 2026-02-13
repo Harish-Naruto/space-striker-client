@@ -2,6 +2,7 @@ import { Lobby } from './views/Lobby';
 import { GameView } from './views/GameView';
 import { useGameStore } from './store/useGameStore';
 import { ToastContainer } from "react-toastify";
+import './styles/galaxy-animations.css';
 import './App.css';
 
 function App() {

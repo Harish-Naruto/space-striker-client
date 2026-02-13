@@ -1,0 +1,51 @@
+/* Optimized Galaxy-themed animations - Performance focused */
+
+/* Custom scrollbar - space theme */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(88, 28, 135, 0.2) 100%);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.8) 0%, rgba(139, 92, 246, 0.6) 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(168, 85, 247, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 1) 0%, rgba(139, 92, 246, 0.8) 100%);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+}
+
+/* Smooth transitions */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hardware acceleration for smooth animations */
+.smooth-transform {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* GPU accelerated blur */
+.gpu-blur {
+  will-change: filter;
+  transform: translateZ(0);
+}
