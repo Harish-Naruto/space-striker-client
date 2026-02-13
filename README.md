@@ -18,6 +18,12 @@ The game follows a Battleship-inspired mechanic where players:
 
 ---
 
+## 🔗 Related
+
+- **Backend Repository** - [space-striker-server](https://github.com/Harish-Naruto/space-striker-server) (Go WebSocket server)
+
+---
+
 ## 🎮 Game Mechanics
 
 ### Lobby System
@@ -294,12 +300,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is open source and available under the MIT License.
-
----
-
-## 🔗 Related
-
-- **Backend Repository** - [space-striker-server](https://github.com/Harish-Naruto/space-striker-server) (Go WebSocket server)
 
 ---
 
