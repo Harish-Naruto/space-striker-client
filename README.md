@@ -205,18 +205,12 @@ interface GameStateResponse {
 git clone https://github.com/Harish-Naruto/space-striker-client.git
 cd space-striker-client
 
-# Install dependencies
-npm install
-# or with bun
 bun install
 ```
 
 ### Development
 
 ```bash
-# Start the development server
-npm run dev
-# or with bun
 bun run dev
 ```
 
@@ -227,20 +221,7 @@ The application will start at `http://localhost:5173` (default Vite port).
 ### Build for Production
 
 ```bash
-# Create optimized production build
-npm run build
-# or with bun
 bun run build
-
-# Preview production build
-npm run preview
-```
-
-### Linting
-
-```bash
-# Run ESLint
-npm run lint
 ```
 
 ---
