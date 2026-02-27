@@ -1,9 +1,9 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useGameStore } from '../store/useGameStore';
-import type { MessageWs, GameStateResponse, HitPayload, GameStatus } from '../types/game';
+import type { MessageWs, GameStateResponse, HitPayload, GameStatus, SyncTimePayload } from '../types/game';
 import { toast } from 'react-toastify';
 
-const WEBSOCKET_URL = 'ws://localhost:8080/ws';
+const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL;
 
 export const useGameSocket = (roomID: string | null) => {
     const wsRef = useRef<WebSocket | null>(null);

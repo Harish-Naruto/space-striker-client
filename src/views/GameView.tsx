@@ -11,7 +11,6 @@ import { GameOver } from '@/components/Game/GameOver';
 import { useGameSocket } from '@/hooks/useGameSocket';
 
 interface GameViewProps {
-    sendMessage: (message: MessageWs) => void;
     onReturnToLobby: () => void;
 }
 

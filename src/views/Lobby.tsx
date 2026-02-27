@@ -5,7 +5,6 @@ import { useGameStore } from "../store/useGameStore";
 import { generateRoomID } from "../utils/utils";
 import {
   Sprite,
-  AnimatedSprite,
   SpriteDefinitions,
 } from "../components/Game/Spritesheet";
 import { SpaceBattleBackground } from "./SpaceBattkeBackground";
@@ -16,7 +15,6 @@ interface LobbyProps {
 
 export const Lobby = ({ onJoinGame }: LobbyProps) => {
   const [inputRoomID, setInputRoomID] = useState("");
-  const [joystickActive, setJoystickActive] = useState(true);
   const { playerID } = useGameStore();
 
   const handleJoin = () => {
@@ -29,13 +27,11 @@ export const Lobby = ({ onJoinGame }: LobbyProps) => {
     const newRoomID = generateRoomID();
     setInputRoomID(newRoomID);
     onJoinGame(newRoomID);
-    setJoystickActive(true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && inputRoomID.trim()) {
       handleJoin();
-      setJoystickActive(true);
     }
   };
 
@@ -227,7 +223,6 @@ export const Lobby = ({ onJoinGame }: LobbyProps) => {
             <motion.button
               onClick={() => {
                 handleJoin();
-                setJoystickActive(true);
               }}
               disabled={!inputRoomID.trim()}
               className={`w-full py-4 font-bold text-sm mb-3 transition-all relative overflow-hidden ${
